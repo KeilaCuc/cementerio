@@ -61,19 +61,19 @@ app.get("/api/health", (req, res) => {
 export default app;
 
 // Manejo de errores no capturados
-process.on('uncaughtException', (error) => {
-  console.error('❌ Error no capturado:', error);
+process.on("uncaughtException", (error) => {
+  console.error("❌ Error no capturado:", error);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Promesa rechazada no manejada:', reason);
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("❌ Promesa rechazada no manejada:", reason);
   process.exit(1);
 });
 
 // Configuración para Render y otros servicios de hosting
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`✅ Servidor ejecutándose en puerto ${port}`);
-  console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌍 Entorno: ${process.env.NODE_ENV || "development"}`);
   console.log(`📡 Tiempo de inicio: ${new Date().toISOString()}`);
 });
