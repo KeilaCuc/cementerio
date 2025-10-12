@@ -16,15 +16,17 @@ import movimientosRoutes from "./routes/movimientosRoutes.js";
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    process.env.FRONTEND_URL || "*"
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      process.env.FRONTEND_URL || "*",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,21 +47,33 @@ app.get("/", (req, res) => {
   res.json({
     message: "API Cementerio funcionando correctamente",
     version: "1.0.0",
-    environment: process.env.NODE_ENV || "development"
+    environment: process.env.NODE_ENV || "development",
   });
 });
 
 app.get("/api/health", (req, res) => {
-  res.json({ 
-    status: "OK", 
-    timestamp: new Date().toISOString() 
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
   });
 });
 
 export default app;
 
-if (process.env.NODE_ENV !== "production") {
-  app.listen(port, () => {
-    console.log(`Escuchando en puerto ${port}`);
-  });
-}
+// Manejo de errores no capturados
+process.on('uncaughtException', (error) => {
+  console.error('❌ Error no capturado:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Promesa rechazada no manejada:', reason);
+  process.exit(1);
+});
+
+// Configuración para Render y otros servicios de hosting
+app.listen(port, '0.0.0.0', () => {
+  console.log(`✅ Servidor ejecutándose en puerto ${port}`);
+  console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📡 Tiempo de inicio: ${new Date().toISOString()}`);
+});
