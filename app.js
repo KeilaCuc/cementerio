@@ -4,20 +4,76 @@ import express from "express";
 import usuariosRoutes from "./routes/usuariosRoutes.js";
 import difuntosRoutes from "./routes/difuntosRoutes.js";
 import encargadosRoutes from "./routes/encargadosRoutes.js";
-const app = express();
-const port = 3000;
+import locacionesRoutes from "./routes/locacionesRoutes.js";
+import panteonesRoutes from "./routes/panteonesRoutes.js";
+import espaciosRoutes from "./routes/espaciosRoutes.js";
+import estadosRoutes from "./routes/estadosRoutes.js";
+import transaccionesRoutes from "./routes/transaccionesRoutes.js";
+import reportesRoutes from "./routes/reportesRoutes.js";
+import deudoresRoutes from "./routes/deudoresRoutes.js";
+import movimientosRoutes from "./routes/movimientosRoutes.js";
 
-app.use(cors());
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      process.env.FRONTEND_URL || "*",
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/difuntos", difuntosRoutes);
 app.use("/api/encargados", encargadosRoutes);
+app.use("/api/locaciones", locacionesRoutes);
+app.use("/api/panteones", panteonesRoutes);
+app.use("/api/espacios", espaciosRoutes);
+app.use("/api/estados", estadosRoutes);
+app.use("/api/transacciones", transaccionesRoutes);
+app.use("/api/reportes", reportesRoutes);
+app.use("/api/deudores", deudoresRoutes);
+app.use("/api/movimientos", movimientosRoutes);
 
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.json({
+    message: "API Cementerio funcionando correctamente",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV || "development",
+  });
 });
 
-app.listen(port, () => {
-  console.log(`Escuchando en puerto ${port}`);
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+export default app;
+
+// Manejo de errores no capturados
+process.on("uncaughtException", (error) => {
+  console.error("❌ Error no capturado:", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("❌ Promesa rechazada no manejada:", reason);
+  process.exit(1);
+});
+
+// Configuración para Render y otros servicios de hosting
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ Servidor ejecutándose en puerto ${port}`);
+  console.log(`🌍 Entorno: ${process.env.NODE_ENV || "development"}`);
+  console.log(`📡 Tiempo de inicio: ${new Date().toISOString()}`);
 });
